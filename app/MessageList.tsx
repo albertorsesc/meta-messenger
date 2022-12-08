@@ -32,6 +32,11 @@ function MessageList() {
 				});
 			}
 		});
+
+		return () => {
+			channel.unbind_all();
+			channel.unsubscribe();
+		};
 	}, [messages, mutate]);
 
 	return (
