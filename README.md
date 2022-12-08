@@ -1,5 +1,7 @@
 ## Meta Messenger
 
+<img src="https://raw.githubusercontent.com/albertorsesc/meta-messenger/master/public/meta-messenger-demo.png" alt="Meta Messenger prototype" style="width:250px;"/>
+
 ### Requirements
 
 - Setup an account on [Upstash](https://upstash.com/)
