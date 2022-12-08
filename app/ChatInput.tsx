@@ -2,15 +2,15 @@
 import { v4 as uuid } from 'uuid';
 
 import { FormEvent, useState } from 'react';
-import { Message } from '../typings';
 import useSWR from 'swr';
+import { Message } from '../typings';
 import fetcher from '../utils/fetchMessages';
 
 function ChatInput() {
 	const [input, setInput] = useState('');
-	const { data, error, mutate } = useSWR('/api/getMessages', fetcher);
+	const { data: messages, error, mutate } = useSWR('/api/getMessages', fetcher);
 
-	const addMessage = (e: FormEvent<HTMLFormElement>) => {
+	const addMessage = async (e: FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 
 		if (!input) return;
@@ -31,7 +31,7 @@ function ChatInput() {
 		};
 
 		const uploadMessageToUpstash = async () => {
-			const response = await fetch('/api/addMessage', {
+			const data = await fetch('/api/addMessage', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -39,20 +39,21 @@ function ChatInput() {
 				body: JSON.stringify({
 					message,
 				}),
-			});
+			}).then((response) => response.json());
 
-			const data = await response.json();
-
-			console.log(data);
+			return [data.message, ...messages!];
 		};
 
-		uploadMessageToUpstash();
+		await mutate(uploadMessageToUpstash, {
+			optimisticData: [message, ...messages!],
+			rollbackOnError: true,
+		});
 	};
 
 	return (
 		<form
-			onSubmit={(e) => addMessage}
-			className="fixed bottom-0 z-50 w-full flex px-10 py-5 space-x-2 border-t border-gray-100"
+			onSubmit={addMessage}
+			className="fixed bottom-0 z-50 w-full flex px-10 py-5 space-x-2 bg-white border-t border-gray-100"
 		>
 			<input
 				type="text"

@@ -3,7 +3,7 @@ import redis from '../../redis';
 import { Message } from '../../typings';
 
 type Data = {
-  message: Message
+  messages: Message[]
 };
 
 type ErrorData = {
@@ -20,7 +20,8 @@ export default async function handler(
     return;
   }
 
+  const response = await redis.hvals('messages');
+  const messages: Message[] = response.map(message => JSON.parse(message)).sort((a, b) => b.created_at - a.created_at);
 
-
-  res.status(200).json({ message: newMessage })
+  res.status(200).json({ messages })
 }
