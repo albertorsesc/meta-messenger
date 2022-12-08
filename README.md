@@ -6,3 +6,4 @@
   * Copy your password and replace the stars in your URL with your password.
   * Add the completed URL in the `.env` file under `REDIS_URL`
 
+* Pusher keys
